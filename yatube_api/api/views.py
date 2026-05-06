@@ -1,6 +1,5 @@
 from rest_framework import viewsets
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend
 
 from posts.models import Post, Group, Comment, Follow
@@ -16,14 +15,13 @@ class PostViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly)
     filter_backends = (DjangoFilterBackend,)
     filterset_fields = ('group',)
-    ordering = ('-pub_date',)
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
 
 class GroupViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Group.objects.all()
+    queryset = Group.objects.all().order_by('id')
     serializer_class = GroupSerializer
 
 
@@ -33,7 +31,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         post_id = self.kwargs.get('post_id')
-        return Comment.objects.filter(post_id=post_id)
+        return Comment.objects.filter(post_id=post_id).order_by('-created')
 
     def perform_create(self, serializer):
         post_id = self.kwargs.get('post_id')
@@ -46,7 +44,7 @@ class FollowViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
-        return Follow.objects.filter(user=self.request.user)
+        return Follow.objects.filter(user=self.request.user).order_by('-id')
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
