@@ -13,16 +13,34 @@
 
 ## Документация
 
-После запуска документация доступна по адресу: `http://127.0.0.1:8000/redoc/`
+После запуска документация доступна по адресу: http://127.0.0.1:8000/redoc/
 
 ## Примеры запросов
 
 ### Получение JWT-токена
 
-`POST /api/v1/jwt/create/`
+POST /api/v1/jwt/create/
 
-```json
 {
     "username": "your_username",
     "password": "your_password"
+}
+
+### Создание поста
+
+POST /api/v1/posts/
+Authorization: Bearer <ваш_токен>
+
+{
+    "text": "Мой первый пост",
+    "group": 1
+}
+
+### Подписка
+
+POST /api/v1/follow/
+Authorization: Bearer <ваш_токен>
+
+{
+    "following": "username"
 }
